@@ -18,5 +18,5 @@ To run the program one needs to compile all of these cpp files. For convenience,
 
 # Using TiDE
 
-For detailed information to using TiDE please read TiDE_documentation.pdf file.
+For detailed information to using TiDE, please read TiDE_documentation.pdf file.
 
