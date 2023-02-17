@@ -13,6 +13,12 @@ class Fx
         virtual double calc_Fx(double x) = 0;
 };
 
+class dFx
+{
+	public:
+		virtual double calc_dFx(double x) = 0;
+};
+
 	/*Some classes to the test*/
 	/*Line class. It derive from fx. It definie a line, f(x)=a*x+b*/
 	class Line : public Fx
@@ -104,5 +110,51 @@ class Trapezoidal_rule
 		double dx;
         int partions;
 };
+
+class Newthon_Raphson
+{
+	public:
+		Newthon_Raphson(Fx& _fx, dFx& _dfx);
+		void set_x0(double _x0) {x0 = _x0;}
+		void set_x1(double _x1) {x1 = _x1;}
+		void set_x2(double _x2) {x2 = _x2;}
+		void set_eps(double _eps) {eps = _eps;}
+		void set_nmax(int _nmax) {nmax = _nmax;}
+		double Newthon_Raphson_method();
+		double Newthon_Raphson_safe();
+	private:
+		Fx* fx;
+		dFx* dfx;
+		double x0;
+		double eps;
+		double x1, x2;
+		int nmax;
+};
+
+//not needed
+/*class Fx_for_Rc : public Fx
+{
+	public:
+		Fx_for_Rc(){}
+		void set_B(double _B) {B = _B;}
+		void set_rw(double _rw) {rw = _rw;}
+		double calc_Fx(double x);
+	private:
+		double B;
+		double rw;
+
+};
+
+class dFx_for_Rc : public dFx
+{
+	public:
+		dFx_for_Rc(){}
+		void set_B(double _B) {B = _B;}
+		void set_rw(double _rw) {rw = _rw;}
+		double calc_dFx(double x);
+	private:
+		double B;
+		double rw;
+};*/
 
 #endif

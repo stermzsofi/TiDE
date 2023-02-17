@@ -3,12 +3,16 @@
 
 #include "tde_lcurve_assistant.hpp"
 #include "Trapezoidal_rule/trapezoidal.hpp"
-#include "star_structure/linear_interpol.hpp"
+#include "Linear_interpol/linear_interpol.hpp"
 #include "tde_parameters.hpp"
 #include <memory>
 
 
 struct Parameters;
+//class Fx_for_Rc;
+//class dFx_for_Rc;
+//class Newthon_Raphson;
+
 
 /* 
     *********
@@ -32,28 +36,98 @@ struct Parameters;
     ********* 
 */
 
+    class wind_calculation_radius_temperature
+    {
+        public:
+            wind_calculation_radius_temperature(Parameters& _param);
+            virtual ~wind_calculation_radius_temperature() = 0;
+            virtual wind_calculation_radius_temperature* clone(Parameters& where) = 0;
+            virtual double calc_radius() = 0;
+            virtual double calc_temperature(double r) = 0;
+        protected:
+            double rph_const_part;
+            void calc_rphconst();
+            Parameters& param;
+    };
+
+    class rph_old : public wind_calculation_radius_temperature
+    {
+        public:
+            rph_old(Parameters& _param);
+            ~rph_old();
+            wind_calculation_radius_temperature* clone(Parameters& where);
+            double calc_radius();
+            double calc_temperature(double r);
+    };
+
+    class rtr : public wind_calculation_radius_temperature
+    {
+        public:
+            rtr(Parameters& _param);
+            ~rtr();
+            wind_calculation_radius_temperature* clone(Parameters& where);
+            double calc_radius();
+            double calc_temperature(double r);
+    };
+
+    class rtr_full : public wind_calculation_radius_temperature
+    {
+        public:
+            rtr_full(Parameters& _param);
+            ~rtr_full();
+            wind_calculation_radius_temperature* clone(Parameters& where);
+            double calc_radius();
+            double calc_temperature(double r);
+    };
+
+    class rc_vs_rtr : public wind_calculation_radius_temperature
+    {
+        public:
+            rc_vs_rtr(Parameters& _param);
+            ~rc_vs_rtr();
+            wind_calculation_radius_temperature* clone(Parameters& where);
+            double calc_radius();
+            double calc_temperature([[maybe_unused]]double r);
+
+        private:
+            void calc_rtr();
+            void calc_rc();
+            void calc_rc_const_part();
+            double calc_T_rtr();
+            double calc_T_rc();
+            double rtr;
+            double rc;
+            double rc_const_part;
+    };
+
 /*Wind part of the light curve*/
         class Wind_part_of_lightcurve
         {
             public:
                 Wind_part_of_lightcurve(Parameters& p);
                 Wind_part_of_lightcurve();
-                double calc_temperature_at_L();
-                double calc_temperature_ph();
-                double calc_radius_ph();
+                void init();
+                //double calc_temperature_at_L();
+                //double calc_temperature_ph();
+                //double calc_radius_ph();
                 double calc_luminosity_at_nu(double nu);
 
                 /*Get photospheric temperature and radius*/
-                double get_phot_temp(){return photospheric_temperature;}
-                double get_phot_rad(){return photospheric_rad;}
+                double get_phot_temp(){return wind_calculation_temperature;}
+                double get_phot_rad(){return wind_calculation_radius;}
 
                 Parameters& par;
 
             private:
-                double photospheric_temperature;
-                double photospheric_rad;
-                double temperature_at_L;
-                double const_multiplier_at_rph;
+                //double photospheric_temperature;
+                //double photospheric_rad;
+                //std::unique_ptr<TL_calculation> calctl;
+                //double temperature_at_L;
+                //double const_multiplier_at_rph;
+                std::unique_ptr<wind_calculation_radius_temperature> calc_radius_temp;
+                double wind_calculation_radius;
+                double wind_calculation_temperature;
+
         };
 
 /*Calculate disk part of the lightcurve:
@@ -76,10 +150,14 @@ struct Parameters;
             double calc_Fx(double x);
 
             Parameters& par;
+
+            double rmax_per_rin;
+            double Tmax;
         
         private:
             double mdot;
             double own_nu;
+            
     };
 
     class Disk_part_of_lightcurve
@@ -90,8 +168,12 @@ struct Parameters;
             double calc_disk_part_at_t();
             double calc_disk_part_at_t_nu(double nu);
             void set_nu(double new_nu);
+            double reprocessing_g();    //ez nem egy túl szép megoldás, de most jó lesz
 
             double get_Tdisk_at_rhalf();
+            double get_Tdisk_at_r(double r);
+            double get_Tmax(){return calc_disk_r.Tmax;}
+            double get_rmax(){return calc_disk_r.rmax_per_rin;}
 
 
         private:
@@ -198,6 +280,8 @@ struct Parameters;
             double calc_Lum_at_t();
             double get_Linp(double t);
             double get_integral(double t);
+            void set_prevtime_previntegral(double pt, double pi);
+            void reset();
         private:
             Parameters& par;
             Trapezoidal_rule diffusion;

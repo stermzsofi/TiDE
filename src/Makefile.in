@@ -104,7 +104,7 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_TiDE_OBJECTS = TiDE-tde_lcurve_run.$(OBJEXT) \
 	TiDE-tde_lcurve_assistant.$(OBJEXT) TiDE-tde_lcurve.$(OBJEXT) \
 	TiDE-tde_parameters.$(OBJEXT) \
-	star_structure/TiDE-linear_interpol.$(OBJEXT) \
+	Linear_interpol/TiDE-linear_interpol.$(OBJEXT) \
 	Trapezoidal_rule/TiDE-trapezoidal.$(OBJEXT)
 TiDE_OBJECTS = $(am_TiDE_OBJECTS)
 TiDE_LDADD = $(LDADD)
@@ -129,8 +129,8 @@ am__depfiles_remade = ./$(DEPDIR)/TiDE-tde_lcurve.Po \
 	./$(DEPDIR)/TiDE-tde_lcurve_assistant.Po \
 	./$(DEPDIR)/TiDE-tde_lcurve_run.Po \
 	./$(DEPDIR)/TiDE-tde_parameters.Po \
-	Trapezoidal_rule/$(DEPDIR)/TiDE-trapezoidal.Po \
-	star_structure/$(DEPDIR)/TiDE-linear_interpol.Po
+	Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Po \
+	Trapezoidal_rule/$(DEPDIR)/TiDE-trapezoidal.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -283,8 +283,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TiDE_SOURCES = tde_lcurve_run.cpp tde_lcurve_assistant.cpp tde_lcurve_assistant.hpp tde_lcurve.cpp tde_lcurve.hpp tde_parameters.cpp tde_parameters.hpp star_structure/linear_interpol.cpp star_structure/linear_interpol.hpp Trapezoidal_rule/trapezoidal.cpp Trapezoidal_rule/trapezoidal.hpp
-TiDE_CXXFLAGS = -std=c++17 -O2
+TiDE_SOURCES = tde_lcurve_run.cpp tde_lcurve_assistant.cpp tde_lcurve_assistant.hpp tde_lcurve.cpp tde_lcurve.hpp tde_parameters.cpp tde_parameters.hpp Linear_interpol/linear_interpol.cpp Linear_interpol/linear_interpol.hpp Trapezoidal_rule/trapezoidal.cpp Trapezoidal_rule/trapezoidal.hpp
+TiDE_CXXFLAGS = -std=c++17 -Wall -Wextra -g
 all: all-am
 
 .SUFFIXES:
@@ -360,15 +360,15 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-star_structure/$(am__dirstamp):
-	@$(MKDIR_P) star_structure
-	@: > star_structure/$(am__dirstamp)
-star_structure/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) star_structure/$(DEPDIR)
-	@: > star_structure/$(DEPDIR)/$(am__dirstamp)
-star_structure/TiDE-linear_interpol.$(OBJEXT):  \
-	star_structure/$(am__dirstamp) \
-	star_structure/$(DEPDIR)/$(am__dirstamp)
+Linear_interpol/$(am__dirstamp):
+	@$(MKDIR_P) Linear_interpol
+	@: > Linear_interpol/$(am__dirstamp)
+Linear_interpol/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) Linear_interpol/$(DEPDIR)
+	@: > Linear_interpol/$(DEPDIR)/$(am__dirstamp)
+Linear_interpol/TiDE-linear_interpol.$(OBJEXT):  \
+	Linear_interpol/$(am__dirstamp) \
+	Linear_interpol/$(DEPDIR)/$(am__dirstamp)
 Trapezoidal_rule/$(am__dirstamp):
 	@$(MKDIR_P) Trapezoidal_rule
 	@: > Trapezoidal_rule/$(am__dirstamp)
@@ -385,8 +385,8 @@ TiDE$(EXEEXT): $(TiDE_OBJECTS) $(TiDE_DEPENDENCIES) $(EXTRA_TiDE_DEPENDENCIES)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f Linear_interpol/*.$(OBJEXT)
 	-rm -f Trapezoidal_rule/*.$(OBJEXT)
-	-rm -f star_structure/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -395,8 +395,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TiDE-tde_lcurve_assistant.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TiDE-tde_lcurve_run.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TiDE-tde_parameters.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@Trapezoidal_rule/$(DEPDIR)/TiDE-trapezoidal.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@star_structure/$(DEPDIR)/TiDE-linear_interpol.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -476,19 +476,19 @@ TiDE-tde_parameters.obj: tde_parameters.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -c -o TiDE-tde_parameters.obj `if test -f 'tde_parameters.cpp'; then $(CYGPATH_W) 'tde_parameters.cpp'; else $(CYGPATH_W) '$(srcdir)/tde_parameters.cpp'; fi`
 
-star_structure/TiDE-linear_interpol.o: star_structure/linear_interpol.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -MT star_structure/TiDE-linear_interpol.o -MD -MP -MF star_structure/$(DEPDIR)/TiDE-linear_interpol.Tpo -c -o star_structure/TiDE-linear_interpol.o `test -f 'star_structure/linear_interpol.cpp' || echo '$(srcdir)/'`star_structure/linear_interpol.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) star_structure/$(DEPDIR)/TiDE-linear_interpol.Tpo star_structure/$(DEPDIR)/TiDE-linear_interpol.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='star_structure/linear_interpol.cpp' object='star_structure/TiDE-linear_interpol.o' libtool=no @AMDEPBACKSLASH@
+Linear_interpol/TiDE-linear_interpol.o: Linear_interpol/linear_interpol.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -MT Linear_interpol/TiDE-linear_interpol.o -MD -MP -MF Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Tpo -c -o Linear_interpol/TiDE-linear_interpol.o `test -f 'Linear_interpol/linear_interpol.cpp' || echo '$(srcdir)/'`Linear_interpol/linear_interpol.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Tpo Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Linear_interpol/linear_interpol.cpp' object='Linear_interpol/TiDE-linear_interpol.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -c -o star_structure/TiDE-linear_interpol.o `test -f 'star_structure/linear_interpol.cpp' || echo '$(srcdir)/'`star_structure/linear_interpol.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -c -o Linear_interpol/TiDE-linear_interpol.o `test -f 'Linear_interpol/linear_interpol.cpp' || echo '$(srcdir)/'`Linear_interpol/linear_interpol.cpp
 
-star_structure/TiDE-linear_interpol.obj: star_structure/linear_interpol.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -MT star_structure/TiDE-linear_interpol.obj -MD -MP -MF star_structure/$(DEPDIR)/TiDE-linear_interpol.Tpo -c -o star_structure/TiDE-linear_interpol.obj `if test -f 'star_structure/linear_interpol.cpp'; then $(CYGPATH_W) 'star_structure/linear_interpol.cpp'; else $(CYGPATH_W) '$(srcdir)/star_structure/linear_interpol.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) star_structure/$(DEPDIR)/TiDE-linear_interpol.Tpo star_structure/$(DEPDIR)/TiDE-linear_interpol.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='star_structure/linear_interpol.cpp' object='star_structure/TiDE-linear_interpol.obj' libtool=no @AMDEPBACKSLASH@
+Linear_interpol/TiDE-linear_interpol.obj: Linear_interpol/linear_interpol.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -MT Linear_interpol/TiDE-linear_interpol.obj -MD -MP -MF Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Tpo -c -o Linear_interpol/TiDE-linear_interpol.obj `if test -f 'Linear_interpol/linear_interpol.cpp'; then $(CYGPATH_W) 'Linear_interpol/linear_interpol.cpp'; else $(CYGPATH_W) '$(srcdir)/Linear_interpol/linear_interpol.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Tpo Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Linear_interpol/linear_interpol.cpp' object='Linear_interpol/TiDE-linear_interpol.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -c -o star_structure/TiDE-linear_interpol.obj `if test -f 'star_structure/linear_interpol.cpp'; then $(CYGPATH_W) 'star_structure/linear_interpol.cpp'; else $(CYGPATH_W) '$(srcdir)/star_structure/linear_interpol.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -c -o Linear_interpol/TiDE-linear_interpol.obj `if test -f 'Linear_interpol/linear_interpol.cpp'; then $(CYGPATH_W) 'Linear_interpol/linear_interpol.cpp'; else $(CYGPATH_W) '$(srcdir)/Linear_interpol/linear_interpol.cpp'; fi`
 
 Trapezoidal_rule/TiDE-trapezoidal.o: Trapezoidal_rule/trapezoidal.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TiDE_CXXFLAGS) $(CXXFLAGS) -MT Trapezoidal_rule/TiDE-trapezoidal.o -MD -MP -MF Trapezoidal_rule/$(DEPDIR)/TiDE-trapezoidal.Tpo -c -o Trapezoidal_rule/TiDE-trapezoidal.o `test -f 'Trapezoidal_rule/trapezoidal.cpp' || echo '$(srcdir)/'`Trapezoidal_rule/trapezoidal.cpp
@@ -622,10 +622,10 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f Linear_interpol/$(DEPDIR)/$(am__dirstamp)
+	-rm -f Linear_interpol/$(am__dirstamp)
 	-rm -f Trapezoidal_rule/$(DEPDIR)/$(am__dirstamp)
 	-rm -f Trapezoidal_rule/$(am__dirstamp)
-	-rm -f star_structure/$(DEPDIR)/$(am__dirstamp)
-	-rm -f star_structure/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -639,8 +639,8 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/TiDE-tde_lcurve_assistant.Po
 	-rm -f ./$(DEPDIR)/TiDE-tde_lcurve_run.Po
 	-rm -f ./$(DEPDIR)/TiDE-tde_parameters.Po
+	-rm -f Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Po
 	-rm -f Trapezoidal_rule/$(DEPDIR)/TiDE-trapezoidal.Po
-	-rm -f star_structure/$(DEPDIR)/TiDE-linear_interpol.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -690,8 +690,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/TiDE-tde_lcurve_assistant.Po
 	-rm -f ./$(DEPDIR)/TiDE-tde_lcurve_run.Po
 	-rm -f ./$(DEPDIR)/TiDE-tde_parameters.Po
+	-rm -f Linear_interpol/$(DEPDIR)/TiDE-linear_interpol.Po
 	-rm -f Trapezoidal_rule/$(DEPDIR)/TiDE-trapezoidal.Po
-	-rm -f star_structure/$(DEPDIR)/TiDE-linear_interpol.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -30,7 +30,9 @@ const double PLANCK_CONST = 2.0*hPERc2;
 const double a_const = 7.566 * 1e-16;            //a is the constant in the equation of radiationenergy, SI units
 const double R_SUN_METER = 696340000;            //Radius of sun in m
 const double YEAR_S = 31556926;
-const double KAPPA_ES = 0.03977264;              //opacity of electron scattering in m^2/kg
+const double KAPPA_ES = 0.035;//0.03977264;              //opacity of electron scattering in m^2/kg
+const double KAPPA_0 = 4.0e21;                   //kappa0 opacity at Kramer opacity law in m^5/kg^2 * K^(7/2)
+const double KAPPA_GAMMA = 0.0027;              //kappa_gamma in m^2/kg
 const double s_to_day = 1./86400.;
 const double YEAR_TO_DAY = 365.242199;
 const double RHO_C_N3_CONSTPART = 12.9351;               //The constant part of rho_c if n =3
@@ -40,6 +42,8 @@ const double K_N3PER2_CONSTPART = 2.51254e-11;      //The constant part of K if 
 const double tpeak_relative_to_tmin_n3 = 5.77316;
 const double tpeak_relative_to_tmin_n3per2 = 2.65911;
 const double overflow_corrector = 1e-300;
+const double DAY_TO_S = 86400.;
+const double PC_TO_CM = 3.08567758e18;
 
 
 
@@ -51,7 +55,7 @@ void chech_option(std::string name, std::string value, bool argument);      //ch
 void check_help(int argc, char* argv[]);
 
 void read_parameter_file();                                                 //read parameters.txt file and set the parameters
-void check_arguments(int argc, char* argv[]);                               //This function will check the options, set the parameters
+void check_arguments(int argc, char* argv[], int start_position);                               //This function will check the options, set the parameters
 double Planck_function_for_nu(double nu, double T);                         //calculate the Planck function to a specified frequency (nu [Hz], T [K])
 double frequency_to_wavelength(double f);                                   //exchange frequency (Hz) to wavelength (nm)
 double wavelength_to_frequency(double w);                                   //exchange wavelength (nm) to frequency (Hz)

@@ -42,6 +42,10 @@ void chech_option(std::string name, std::string value, bool argument)
         {
             Parameters_run.eta = stod(value);
         }
+        else if("eps_reprocessing" == name)
+        {
+            Parameters_run.eta_reprocessing = stod(value);
+        }
         else if("beta" == name)
         {
             Parameters_run.beta = stod(value);
@@ -180,10 +184,10 @@ void check_help(int argc, char* argv[])
     }
 }
 
-void check_arguments(int argc, char* argv[])
+void check_arguments(int argc, char* argv[], int start_position)
 {
     std::string name, value;
-    for(auto i = 1; i < argc; i++)
+    for(auto i = start_position; i < argc; i++)
     {
         name = argv[i];
         /*set output type*/
@@ -212,6 +216,23 @@ void check_arguments(int argc, char* argv[])
         {
             Parameters_run.change_foutcalculation(new Fout_Lodato_Rossi_eq28(Parameters_run));
             Parameters_run.is_bifout = true;
+        }
+        /*rphot type*/
+        else if("-rph" == name)
+        {
+            Parameters_run.wind_radius = "rph";
+        }
+        else if("-rtr" == name)
+        {
+            Parameters_run.wind_radius = "rtr";
+        }
+        else if("-rtr_full" == name)
+        {
+            Parameters_run.wind_radius = "rtr_full";
+        }
+        else if("-rc" == name)
+        {
+            Parameters_run.wind_radius = "rc";
         }
         /*set type of Mdotfb*/
         else if("-Mdotfb_classic" == name)
@@ -283,6 +304,11 @@ void check_arguments(int argc, char* argv[])
         {
             Parameters_run.change_tmincalculation(new tmin_from_GR13(Parameters_run));
         }
+        /*Set rout calculation type*/
+        else if("-timedep_rout" == name)
+        {
+            Parameters_run.change_routcalculation(new time_dependent_rout(Parameters_run));
+        }
         /*Set a model family*/
         else if("-GR13" == name)
         {
@@ -291,12 +317,14 @@ void check_arguments(int argc, char* argv[])
             Parameters_run.change_Mdotfbcalculation(new Mdotfb_L09_constrho_x(Parameters_run));
             Parameters_run.calcMdotfb -> set_calc_ninf("GR13");
         }
-
-        
-        
         else if("-use_rph_limit" == name)
         {
             Parameters_run.use_rph_limit = true;
+        }
+        /*use cloudy reprocessing in diffusion*/
+        else if("-cloudy_reprocess" == name)
+        {
+            Parameters_run.my_rep = true;
         }
         else
         {

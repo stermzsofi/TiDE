@@ -3,9 +3,11 @@
 
 #include "tde_lcurve_assistant.hpp"
 #include "Trapezoidal_rule/trapezoidal.hpp"
-#include "star_structure/linear_interpol.hpp"
+#include "Linear_interpol/linear_interpol.hpp"
 #include <memory>
 #include <cstdlib>
+#include <cmath>
+#include <limits>
 
 enum startype : int;
 
@@ -45,8 +47,11 @@ class Object
             Blackhole();
             void init();
             void print_settings();
+            double get_RISCO();
         private:
             double calc_schwarzschild_radius();
+            double RISCO;
+            void calc_RISCO();
     };
 
     class Mass_to_Radii;
@@ -104,6 +109,97 @@ class Fout_calculation;
 class Mdot_peak_calculation;
 class tmin_calculation;
 class Mdotfb_calculation;
+class TL_calculation;
+class rout_calculation;
+struct Parameters;
+class calc_Disk_at_r_for_bolometric : public Fx
+    {
+        public:
+            calc_Disk_at_r_for_bolometric(Parameters& p);
+            calc_Disk_at_r_for_bolometric();
+
+            //void set_nu(double new_nu);
+            double calc_Mdot();     //returns kg/s unit
+            double calc_sigma_Td4(double r);
+            //double calc_Td_at_rhalf();
+            double calc_Lbolometric_at_r(double r);
+
+            double calc_Fx(double x);
+
+            Parameters& par;
+        
+        private:
+            double mdot;
+            //double own_nu;
+    };
+
+/*Fx_for_sigma class: to calculate the integral in the sigma*/
+class Fx_for_sigma : public Fx
+{
+    public:
+        Fx_for_sigma(Parameters& par);
+        Fx_for_sigma();
+        void set_w(double w_) {w = w_;}
+        void set_w_Rc(double w_Rc_){w_Rc = w_Rc_;}
+        void set_T(double T_){T = T_;}
+        //void set_t(double t_){t = t_;}
+        double calc_Fx(double x);
+    private:
+        Parameters& p;
+        double w;
+        double w_Rc;
+        double T;
+        //double t;
+        double G(double z);     //Green function
+        double St(double t);    //Mass source function
+};
+
+struct sigma
+{
+    sigma();
+    sigma(Parameters& par);
+
+    Parameters& p;
+    Fx_for_sigma fx;
+    Quad_Trapezoidal integ;
+    double T;
+    double w_R;
+    double w_Rc;
+    //double t;
+    double R;
+
+    double calc_T(double t);
+    double calc_wR(double _R);
+    double calc_sigma_R_t(double t, double _R);
+};
+
+class Fx_for_Redd : public Fx
+{
+    public:
+        Fx_for_Redd();
+        Fx_for_Redd(Parameters& par);
+        void set_t(double _t) {t = _t;}
+        double calc_Fx(double x);
+        double last_fx;
+    private:
+        Parameters& p;
+        sigma s;
+        double t;
+};
+
+class dFx_for_Redd : public dFx
+{
+    public:
+        dFx_for_Redd();
+        dFx_for_Redd(Parameters & par, Fx_for_Redd & fx_);
+        double calc_dFx(double x);
+        void set_eps_f(double eps){eps_f = eps;}
+    private:
+        Parameters& p;
+        Fx_for_Redd& fx;
+        double eps_f;
+
+};
 
 
 /*
@@ -138,6 +234,17 @@ class Mdotfb_calculation;
     ********
 */
 
+/*Parameters struct sub structs*/
+struct parameters_for_timedependent_rout
+{
+    double nu_c;    //valami viscosity: talán central?
+    double alpha = 0.1;   //effective kinematic viscosity
+    double HperR = 0.5;   //disk half thickness per distance from BH
+    double Rc;      //circularization radius: 2rt/beta
+    double n = 0.5;       //parameter in Green fuction
+    double l = 3.0/4.0;       //parameter in Green function
+};
+
 
 /*Other needed parameters, some simple calculations*/
 struct Parameters
@@ -160,6 +267,10 @@ struct Parameters
         void calculate_time_wind_limit();
         void calculate_time_rph_limit();
         //void calculate_tpeak();
+        void calculate_N_col();
+        void calculate_n();
+        void calculate_Rmax();
+        void calculate_deltaomega();
     
         /*Print parametersfunction*/
         void print_parameters();
@@ -175,9 +286,12 @@ struct Parameters
         void change_mdotpeakcalculation(Mdot_peak_calculation* new_mdotpeak);
         void change_tmincalculation(tmin_calculation* new_tmincalc);
         void change_Mdotfbcalculation(Mdotfb_calculation* new_calcMdotfb);
+        void change_TLcalculation(TL_calculation* new_TLcalculation);
+        void change_routcalculation(rout_calculation* new_routcalculation);
 
         /*Parameters*/
         double eta;
+        double eta_reprocessing;
         double beta;
         double fout;
         double fv;
@@ -193,6 +307,8 @@ struct Parameters
         std::unique_ptr<Mdot_peak_calculation> calcmdotpeak;
         std::unique_ptr<tmin_calculation> calctmin;
         std::unique_ptr<Mdotfb_calculation> calcMdotfb;
+        std::unique_ptr<TL_calculation> calcTL;
+        std::unique_ptr<rout_calculation> calcrout;
 
         /*Lightcurve intervalls and step*/
         double t_start;
@@ -204,10 +320,10 @@ struct Parameters
         double nu_start;
         double nu_end;
         double dnu;
-        double time;
+        double time;    //also used as time dependent parameter when lightcurve is calculated
         
         /*Derived quantities*/
-        double rt;      //tidal radius  [m]
+        double rt;      //tidal radius [m]
         double rp;      //pericentrum distance [m]
         double tmin;
         double rphtmin;
@@ -227,10 +343,25 @@ struct Parameters
         double oneper4pid2;
         double cosi;
         double Mdot_peak;
+        double delta_omega; //Deltaomega in Strubbe: in sr
+
+        /*Needed classes and functions for calculate Ldisk bolometric luminosity at time*/
+        calc_Disk_at_r_for_bolometric disk_bol_calc;
+        Quad_Trapezoidal Ldiskbol;
+        void Ldiskbol_init();
+        void calc_Ldisk();
+        
 
         /*Some time dependent values, but it useful to speed up the calculations*/
         double Mdotfb_t;
+        double Ldisk_bolometric_at_t;
+        double TL;
+        double n; //number density : in cm^-3
+        double N_col; //column density: in cm^-2
+        double Rmax; //Rmax in Strubbe: in cm
+        //double t;
 
+        //Mdotfb_t, fout, time, TL
         void calculate_timedependent_parameters(double t);
 
         /*Switch for bolometric lightcurve and extra informations*/
@@ -252,11 +383,20 @@ struct Parameters
             */
         bool t_end_relative_to_tmin = true;
 
+        /**nagyon nagyon randa: ez ahhoz, hogy a cloudy-s reprocesst használja diffúziónál*/
+        bool my_rep = false;
+
         /*Bool varioable for build-in fout calculation*/
         bool is_bifout = false;
 
         //Init function for Parameters struct
-        void init(double dtime);
+        void init(/*double dtime*/);
+        void refresh(double dtime);
+
+        /*wind radius*/
+        std::string wind_radius = "rph";
+
+        parameters_for_timedependent_rout time_dep_rout;
 };
 
 /*Class to set fout calculation*/
@@ -442,6 +582,7 @@ class tmin_calculation
             virtual Mdotfb_calculation* clone(Parameters& where) = 0;
             virtual void calc_Mdotfb_at_t(double t) = 0;
             virtual void init() = 0;
+            virtual void refresh() = 0;
             virtual void print_setted_type() = 0;
             void set_calc_ninf(std::string ninf);
             double get_ninf(){return n_inf;}
@@ -461,6 +602,7 @@ class tmin_calculation
                 void calc_Mdotfb_at_t(double t);
                 void print_setted_type();
                 void init() {}
+                void refresh() {}
         };
 
         //Mdotfb = Mdotp * (1 - (t/tmin)^(-4/3)) * (t/tmin)^(n_inf)
@@ -473,6 +615,7 @@ class tmin_calculation
                 void calc_Mdotfb_at_t(double t);
                 void print_setted_type();
                 void init(){}
+                void refresh() {}
         };
 
         class Mdotfb_L09_all : public Mdotfb_calculation
@@ -485,9 +628,72 @@ class tmin_calculation
                 void calc_constpart();
                 void print_setted_type();
                 void init();
+                void refresh();
             private:
                 double const_part;
                 Interpolator interpolate;
         };
+
+    /*TL calculation
+        with reprocessing or not*/
+    
+    class TL_calculation
+    {
+        public:
+            TL_calculation(Parameters& _param_obj);
+            virtual double calc_TL([[maybe_unused]] double Ldisk) = 0;
+            virtual TL_calculation* clone(Parameters& where) = 0;
+            virtual ~TL_calculation();
+        protected:
+            Parameters& param_obj;
+    };
+
+        class TL_without_reprocessing : public TL_calculation
+        {
+            public:
+                TL_without_reprocessing(Parameters& _param_obj);
+                TL_calculation* clone(Parameters& where);
+                ~TL_without_reprocessing();
+                double calc_TL([[maybe_unused]] double Ldisk);
+        };
+
+        class TL_with_reprocessing : public TL_calculation
+        {
+            public:
+                TL_with_reprocessing(Parameters& _param_obj);
+                TL_calculation* clone(Parameters& where);
+                ~TL_with_reprocessing();
+                double calc_TL([[maybe_unused]] double Ldisk);
+        };
+
+    class rout_calculation
+    {
+        public:
+            //rout_calculation();
+            rout_calculation(Parameters& par);
+            virtual double calc_rout([[maybe_unused]] double t) = 0;
+        protected:
+            Parameters& p;
+    };
+
+        class constant_rout : public rout_calculation
+        {
+            public:
+                constant_rout(Parameters& par);
+                double calc_rout( [[maybe_unused]] double t);
+        };
+
+        class time_dependent_rout : public rout_calculation
+        {
+            public:
+                time_dependent_rout(Parameters& par);
+                double calc_rout(double t);
+            private:
+                Fx_for_Redd fx;
+                dFx_for_Redd dfx;
+                Newthon_Raphson iter;
+        };
+
+    
 
 #endif

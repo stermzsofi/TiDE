@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
         //read parameter file and check the flags
         check_help(argc, argv);
         read_parameter_file();
-        check_arguments(argc, argv);
+        check_arguments(argc, argv, 1);
         
         //Check that use any flags which create an output file
         if(!Parameters_run.lcurve && !Parameters_run.spectra && !Parameters_run.bolometric && !Parameters_run.diffusion)
@@ -26,13 +26,18 @@ int main(int argc, char* argv[])
         }
         
         //Init Parameters_run struct
-        Parameters_run.init(0);
+        Parameters_run.init(/*5*/);
 
         //Make simple monochromatic lightcurve
         if(Parameters_run.lcurve)
         {
             Total_lightcurve total_lc(Parameters_run);
             Parameters_run.print_parameters();
+            std::cout << "Ledd = " << Parameters_run.mdot_edd*Parameters_run.eta*c*c * 1e7 << std::endl;
+            /*for(auto i = 0; i <=1000; i++)
+            {
+                std::cout << 
+            }*/
             /*if(Parameters_run.s.get_politrop() == "4per3")
             {
                 std::cout << "tpeak = " << tpeak_relative_to_tmin_n3 * Parameters_run.tmin << std::endl;
@@ -43,6 +48,7 @@ int main(int argc, char* argv[])
             }*/
             //std::cout << Parameters_run.tphtmin << "\t" << Parameters_run.rphtmin << std::endl;
             total_lc.calculate_lightcurve_timeintervall(Parameters_run.t_start, Parameters_run.t_end, Parameters_run.dt);
+        
         }
 
         //Make a spectra

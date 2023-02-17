@@ -93,7 +93,7 @@
 
     double Quad_Trapezoidal::qtrap()
     {
-        const int JMAX = 10;        //max number of steps: 2^20
+        const int JMAX = 20;        //max number of steps: 2^20
         double olds = 0.0;
         for (int j = 0; j < JMAX; j++)
         {
@@ -113,7 +113,7 @@
             olds = s;
         }
         n = 0;
-        throw("Too many steps in routine qtrap.");
+        throw std::runtime_error("ERROR! Too many steps in routine qtrap.");
         //std::cout << "Too many steps in routine qtrap. The error is: " << std::abs(s)/std::abs(olds) << std::endl;
         //return s;
     }
@@ -217,3 +217,99 @@
         }*/
         return integral;
     }
+
+    Newthon_Raphson::Newthon_Raphson(Fx& _fx, dFx& _dfx)
+    {
+        fx = &_fx;
+        dfx = &_dfx;
+        x0 = 1.0;
+        eps = 1e-5;
+        nmax = 1000;
+    }
+
+    double Newthon_Raphson::Newthon_Raphson_method()
+    {
+        double xn = x0;
+        double xnp1=xn;
+        for(int n = 0; n < nmax; n++)
+        {
+            xn = xnp1;
+            xnp1 = xn - fx->calc_Fx(xn)/dfx->calc_dFx(xn);
+            if(std::abs(xn-xnp1) < eps) return xnp1;
+        }
+        throw std::runtime_error("ERROR! Couldn't calculate Rc, too many steps needed!");
+    }
+
+    double Newthon_Raphson::Newthon_Raphson_safe()
+    {
+        double xh, xl;  //for lower and higher boundary
+        double fl = fx->calc_Fx(x1);    
+        double fh = fx->calc_Fx(x2);
+        if((fl > 0 && fh > 0) || (fl < 0 && fh < 0))    //if in this boundary fx couldn't reach 0
+        {
+            std::cout << "xl = " << x1  << "\tfl = " << fl << "\txh = " << x2 << "\tfh = " << fh << std::endl;
+            throw std::runtime_error("ERROR! Safe rutine boundary not appropriate!");
+        }
+        if(fl == 0) return x1; 
+        if(fh == 0) return x2;
+        if(fl < 0.0)
+        {
+            xl = x1;
+            xh = x2;
+        }
+        else
+        {
+            xl = x2;
+            xh = x1;
+        }
+        double xn = 0.5*(x1 + x2);  //find the center of the boundary
+        double dxold = std::abs(x2-x1);     //last before and last step
+        double dx = dxold;
+        double f = fx->calc_Fx(xn);
+        double df = dfx->calc_dFx(xn);
+        for(int n = 0; n < nmax; n++)
+        {
+            if( (((xn - xh)*df - f) * ((xn - xl) * df - f)) > 0 || (std::abs(2.0*f) > std::abs(dxold * df)) )
+            {
+                dxold = dx;
+                dx = 0.5 * (xh - xl);
+                xn = xl + dx;
+                if(xl == xn) return xn;
+            } 
+            else
+            {
+                dxold = dx;
+                dx = f/df;
+                double xnmin1 = xn;
+                xn -= dx;
+                if(xnmin1 == xn) return xn;
+            }
+            if(std::abs(dx) < eps) return xn;
+            f = fx->calc_Fx(xn);
+            df = dfx->calc_dFx(xn);
+            if(f < 0.0)
+            {
+                xl = xn;
+            }
+            else
+            {
+                xh = xn;
+            }
+        }
+        throw std::runtime_error("ERROR! Too many iteration step need in safe Newton-Raphson method!");
+    }
+
+    //Bad functions
+    /*double Fx_for_Rc::calc_Fx(double x)
+    {
+        double f_Rc;
+        f_Rc = B * std::pow(x,-5./6.) * 0.5 - (B * 0.5 * std::pow(rw,-2)* std::pow(x,7./6.)) - 1.0;
+        return f_Rc;
+    }
+
+    double dFx_for_Rc::calc_dFx(double x)
+    {
+        double df_Rc;
+        df_Rc = B * 5./12. * std::pow(x,-11./6.) - B * std::pow(rw, -2) * 7./12. * std::pow(x,1./6.);
+        return df_Rc;
+    }*/
