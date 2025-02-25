@@ -36,6 +36,8 @@
         double rph_old::calc_radius()
         {
             double rph;
+            //test
+            calc_rphconst();
             rph = rph_const_part * param.fout * param.Mdotfb_t;
             return rph;
         }
@@ -645,8 +647,11 @@
                 }
                 catch(char const* e)
                 {
-                    std::cerr << e << '\n';
-                    overflow = true;
+                    if(par.time > par.tmin + 2.0)
+                    {
+                        std::cerr << e << '\n';
+                        overflow = true;
+                    }
                     res = diff_fx.L_inp_new(time_offset);
                 }
             }

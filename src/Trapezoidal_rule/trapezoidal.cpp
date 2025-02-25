@@ -57,8 +57,6 @@
         return res;
     }
 
-    
-
     Quad_Trapezoidal::Quad_Trapezoidal(Fx& _fv, double _x_start, double _x_end, double _eps) : fv(&_fv), x_start(_x_start), x_end(_x_end), eps(_eps)
     {
         n = 0;
@@ -72,7 +70,6 @@
         n++;
         if ( 1 == n )
         {
-            //std::cout << "next x_end" << x_end << "xstart " << x_start << "fv xstart" << fv->calc_Fx(x_start) << "fv_xend " << fv->calc_Fx(x_end) << std::endl;
             s = 0.5 * (x_end - x_start) * (fv->calc_Fx(x_start) + fv->calc_Fx(x_end));
             return s;
         }
@@ -96,8 +93,6 @@
 
     double Quad_Trapezoidal::qtrap()
     {
-        //std::cout << "n " << n << " x_start " << x_start  << std::endl;
-        //std::cout <<  "fv xstart" << fv->calc_Fx(x_start) << std::endl;
         const int JMAX = 20;        //max number of steps: 2^20
         double olds = 0.0;
         n=0;s=0;
@@ -108,7 +103,7 @@
             {
                 n = 0;
                 throw("WARNING: S is nan!"); 
-            } //throw("WARNING: S is nan!"); 
+            } 
             if(j > 3)
             {
                 if (std::abs(s - olds) < eps * std::abs(olds) || (s == 0 && olds == 0))

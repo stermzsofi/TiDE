@@ -461,5 +461,10 @@ bool IsDouble(const std::string& s)
     return std::regex_match(s,reg);
 }
 
+bool almost_Equal(double a, double b, double eps)
+{
+    return std::fabs(a - b) < eps;
+}
+
 
 

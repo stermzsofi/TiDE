@@ -78,6 +78,7 @@ const double tpeak_relative_to_tmin_n3per2 = 2.65911;
 const double overflow_corrector = 1e-300;
 const double DAY_TO_S = 86400.;
 const double PC_TO_CM = 3.08567758e18;
+const double MY_EPS = 1.0e-5;                        //The eps limit where two doubles looks same
 
 
 
@@ -97,5 +98,7 @@ double wavelength_to_frequency(double w);                                   //ex
 void print_help();                                                          //print the help of the TDE program
 
 bool IsDouble(const std::string& s);                                        //decide on a string that it is a double or not
+
+bool almost_Equal(double a, double b, double eps);
 
 #endif

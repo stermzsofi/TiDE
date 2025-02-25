@@ -392,6 +392,7 @@ struct Parameters
         //Init function for Parameters struct
         void init(/*double dtime*/);
         void refresh(double dtime);
+        void init_tmin();
 
         /*wind radius*/
         std::string wind_radius = "rph";
