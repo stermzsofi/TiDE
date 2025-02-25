@@ -33,6 +33,9 @@ class Interpolator
         double interpolateAtX(double t);        //interpolation for found the value of the integral at a given time
                                                 //uses kszimax and tmin values
         double genericInterpolation(double x);  //general version of interpolation
+        void push_back_to_table(double x, double Fx);
+        void reset_table();
+        void get_size(){std::cout << Tablenew.size() << "\t" << Tablenew.capacity() << std::endl;}
 };
 
 bool isEqual(double x, double y, double eps);

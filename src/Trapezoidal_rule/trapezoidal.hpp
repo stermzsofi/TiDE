@@ -70,7 +70,7 @@ class Quad_Trapezoidal : public Quadrature
 		void set_eps(double _eps) {eps = _eps;}
 		void set_xstart(double _x_start){x_start = _x_start;}
 		void set_xend(double _x_end){x_end = _x_end;}
-		void set_n(double _n){n = _n;}
+		void set_n(int _n){n = _n;}
 		void set_newfx(Fx& fx){fv = &fx;}
 		double next();
 		double qtrap();

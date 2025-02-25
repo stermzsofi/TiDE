@@ -12,7 +12,6 @@ void Interpolator::set_kszimax(double kszim)
 
 void Interpolator::set_tmin(double _tmin)
 {
-    //std::cout << Tablenew.size() << std::endl;
     tmin = _tmin;
 }
 
@@ -42,15 +41,8 @@ double Interpolator::interpolateAtX(double t)
 {
     double x = kszimax * std::pow(t/tmin, -2./3.);
     auto x_1 = std::lower_bound(Tablenew.begin(), Tablenew.end(), x, [] (Table_x_Fx t, double x){return t.x>x;});
-    //std::cout << "x1 found" << std::endl;
     auto x_2 = std::prev(x_1,1);
-    //std::cout << "x2 found" << std::endl;
-    //std::cout << (Tablenew.size()) << std::endl;
-    //std::cout << "Here am I!" << std::endl;
-    //std::cout << " " << x_1->x<< " " << x_2->Fx << std::endl;
-    //std::cout << "Do you see me?" << std::endl;
     if (x_1 == Tablenew.end()) return std::prev(x_1,1)->Fx;
-    //std::cout << "Okkkk" << std::endl;
     double F_x = interpolate_linear(x, x_2 ->x,x_1->x, x_2->Fx, x_1->Fx );
     return F_x;
 }
@@ -64,7 +56,9 @@ double Interpolator::genericInterpolation(double x)
 {
     //auto x_2 = std::find_if(Tablenew.begin(), Tablenew.end(), [x](Table_x_Fx now){return x <= now.x;});
     //if (x_2 == Tablenew.end()) return std::prev(x_2,1)->Fx;
+    //auto x_2 = std::lower_bound(Tablenew.begin(), Tablenew.end(), x, [] (Table_x_Fx t, double x){return t.x>x;});
     //auto x_1 = std::prev(x_2,1);
+    
     //double F_x = interpolate_linear(x, x_2 ->x,x_1->x, x_2->Fx, x_1->Fx );
     //return F_x;
     auto x_2 = std::upper_bound(Tablenew.begin(), Tablenew.end(), x, [](double x, Table_x_Fx t){return x <= t.x;});
@@ -73,6 +67,7 @@ double Interpolator::genericInterpolation(double x)
     
     double F_x = interpolate_linear(x, x_2 ->x,x_1->x, x_2->Fx, x_1->Fx );
     return F_x;
+
 }
 
 
@@ -82,4 +77,15 @@ void Interpolator::init(std::vector<double> x, std::vector<double> fx)
     {
         this->Tablenew.push_back(Table_x_Fx{x[i],fx[i]});
     }
+}
+
+void Interpolator::push_back_to_table(double x, double Fx)
+{
+    this -> Tablenew.push_back(Table_x_Fx{x, Fx});
+}
+
+void Interpolator::reset_table()
+{
+    this->Tablenew.clear();
+    //this->Tablenew.erase(Tablenew.begin(),Tablenew.end());
 }

@@ -777,7 +777,6 @@ void Parameters::init(/*double dtime*/)
 
     // disk_bol_calc = calc_Disk_at_r_for_bolometric(*this);
     Ldiskbol_init();
-    
     // disk_bol_calc(*this);
     calculate_timedependent_parameters(tmin);
     calculate_rL();
@@ -809,30 +808,23 @@ void Parameters::init(/*double dtime*/)
 
 void Parameters::refresh(double dtime)
 {
-    s.init();
-    bh.init();
-    calculate_rt();
-    calctmin->calc_tmin();
+    init_tmin();
     calculate_mdot_edd();
-    
     // calcMdotfb->init();
     calcMdotfb->refresh();
-    
     calcmdotpeak->calc_mdotpeak();
-    //std::cout << "Ok" << std::endl;
     calculate_timedependent_parameters(tmin);
-   
     calculate_rL();
     fv_check();
     calculate_rphtmin();
     calculate_tphtmin();
-    
 
     calculate_timedependent_parameters(dtime);
     calculate_rin();
     //calculate_rout();
     calculate_rhalf();
 
+    /*ezt még végig kéne gondolni, hogy nem lehet-e okosabban*/
     Ldiskbol_init();
 
     calculate_time_wind_limit();
@@ -855,6 +847,14 @@ void Parameters::refresh(double dtime)
     calculate_deltaomega();
 }
 
+void Parameters::init_tmin()
+{
+    s.init();
+    bh.init();
+    calculate_rt();
+    calctmin->calc_tmin();
+}
+
 void Parameters::calculate_timedependent_parameters(double t)
 {
     time = t;
@@ -864,8 +864,6 @@ void Parameters::calculate_timedependent_parameters(double t)
 
     calcMdotfb->calc_Mdotfb_at_t(t);
     calcfout->calculate_fout();
-    //std::cout << "Rin = " << rin << "Rout = " << rout << std::endl; 
-    //calc_Ldisk(); // Ldisk_bolometric_at_t kiszámolása
     if(/*eta_reprocessing != 0*/ rout > rin)
     {
         calc_Ldisk(); // Ldisk_bolometric_at_t kiszámolása
@@ -1042,7 +1040,6 @@ void Mdotpeak_L09_all::calc_mdotpeak()
         tpeak = tpeak_relative_to_tmin_n3 * param_obj.tmin;
     }
     param_obj.calcMdotfb->calc_Mdotfb_at_t(tpeak);
-    //std::cout << "Ok1" << std::endl;
     param_obj.Mdot_peak = param_obj.Mdotfb_t;
 }
 
@@ -1288,7 +1285,6 @@ void Mdotfb_L09_all::init()
 void Mdotfb_L09_all::refresh()
 {
     calc_constpart();
-    //std::cout << "I live" << std::endl;
     // std::string needed_file;
     /*if(const char* path = std::getenv("TIDE_PATH"))
     {

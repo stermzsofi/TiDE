@@ -44,9 +44,10 @@ struct Parameters;
             virtual wind_calculation_radius_temperature* clone(Parameters& where) = 0;
             virtual double calc_radius() = 0;
             virtual double calc_temperature(double r) = 0;
+            void calc_rphconst();
         protected:
             double rph_const_part;
-            void calc_rphconst();
+            
             Parameters& param;
     };
 
@@ -115,6 +116,8 @@ struct Parameters;
                 /*Get photospheric temperature and radius*/
                 double get_phot_temp(){return wind_calculation_temperature;}
                 double get_phot_rad(){return wind_calculation_radius;}
+                void refresh_wind_calculation_radius(){calc_radius_temp->calc_rphconst();}
+
 
                 Parameters& par;
 
@@ -280,7 +283,10 @@ struct Parameters;
             double calc_Lum_at_t();
             double get_Linp(double t);
             double get_integral(double t);
+            double get_prev_integral(){return previous_integral;}
             void set_prevtime_previntegral(double pt, double pi);
+            void set_overflow(bool _overflow){overflow = _overflow;}
+            bool get_overflow(){return overflow;}
             void reset();
         private:
             Parameters& par;
