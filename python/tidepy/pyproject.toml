@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0","numpy>=1.10"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tidepy"
+version = "0.1.0"
+authors = [
+  { name="Zsófia Kovács-Stermeczky", email="stermeczky.zsofia@csfk.org" },
+]
+description = "Python wrapper for using the TiDE Software"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Linux/Unix",
+    "License :: OSI Approved :: MIT License",
+]

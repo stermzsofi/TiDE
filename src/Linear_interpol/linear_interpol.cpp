@@ -12,6 +12,7 @@ void Interpolator::set_kszimax(double kszim)
 
 void Interpolator::set_tmin(double _tmin)
 {
+    //std::cout << Tablenew.size() << std::endl;
     tmin = _tmin;
 }
 
@@ -41,8 +42,15 @@ double Interpolator::interpolateAtX(double t)
 {
     double x = kszimax * std::pow(t/tmin, -2./3.);
     auto x_1 = std::lower_bound(Tablenew.begin(), Tablenew.end(), x, [] (Table_x_Fx t, double x){return t.x>x;});
+    //std::cout << "x1 found" << std::endl;
     auto x_2 = std::prev(x_1,1);
+    //std::cout << "x2 found" << std::endl;
+    //std::cout << (Tablenew.size()) << std::endl;
+    //std::cout << "Here am I!" << std::endl;
+    //std::cout << " " << x_1->x<< " " << x_2->Fx << std::endl;
+    //std::cout << "Do you see me?" << std::endl;
     if (x_1 == Tablenew.end()) return std::prev(x_1,1)->Fx;
+    //std::cout << "Okkkk" << std::endl;
     double F_x = interpolate_linear(x, x_2 ->x,x_1->x, x_2->Fx, x_1->Fx );
     return F_x;
 }
@@ -54,9 +62,15 @@ double Interpolator::interpolate_linear(double x, double x1, double x0, double y
 
 double Interpolator::genericInterpolation(double x)
 {
-    auto x_2 = std::find_if(Tablenew.begin(), Tablenew.end(), [x](Table_x_Fx now){return x <= now.x;});
+    //auto x_2 = std::find_if(Tablenew.begin(), Tablenew.end(), [x](Table_x_Fx now){return x <= now.x;});
+    //if (x_2 == Tablenew.end()) return std::prev(x_2,1)->Fx;
+    //auto x_1 = std::prev(x_2,1);
+    //double F_x = interpolate_linear(x, x_2 ->x,x_1->x, x_2->Fx, x_1->Fx );
+    //return F_x;
+    auto x_2 = std::upper_bound(Tablenew.begin(), Tablenew.end(), x, [](double x, Table_x_Fx t){return x <= t.x;});
     if (x_2 == Tablenew.end()) return std::prev(x_2,1)->Fx;
-    auto x_1 = std::prev(x_2,1);
+    auto x_1 = std::prev(x_2, 1);
+    
     double F_x = interpolate_linear(x, x_2 ->x,x_1->x, x_2->Fx, x_1->Fx );
     return F_x;
 }

@@ -145,6 +145,21 @@ void Star::init()
             K = K_N3PER2_CONSTPART;
         }
     }
+    else
+    {
+        if("4per3" == politrop)
+        {
+            n = 3;
+            rho_c = RHO_C_N3_CONSTPART;
+            K = K_N3_CONSTPART;
+        }
+        else
+        {
+            n = 1.5;
+            rho_c = RHO_C_N3PER2_CONSTPART;
+            K = K_N3PER2_CONSTPART;
+        }
+    }
     rho_c *= mass * M_SUN * std::pow(radius * R_SUN_METER, -3);
     K *= std::pow(radius * R_SUN_METER, 2) * std::pow(rho_c, 1.0 - 1. / n);
 }
@@ -358,7 +373,7 @@ Parameters::Parameters() : disk_bol_calc(calc_Disk_at_r_for_bolometric(*this))
 // Destructor
 Parameters::~Parameters() {}
 
-Parameters::Parameters(Parameters &copied)
+/*Parameters::Parameters(Parameters &copied)
 {
     N = copied.N;
     eta = copied.eta;
@@ -375,16 +390,16 @@ Parameters::Parameters(Parameters &copied)
     t_start = copied.t_start;
     t_end = copied.t_end;
     dt = copied.dt;
-    nu = copied.nu;
+    nu = copied.nu;*/
 
     /*Spectra intervalls and step*/
-    nu_start = copied.nu_start;
+    /*nu_start = copied.nu_start;
     nu_end = copied.nu_end;
     dnu = copied.dnu;
-    time = copied.time;
+    time = copied.time;*/
 
     /*Derived quantities*/
-    rt = copied.rt;
+    /*rt = copied.rt;
     rp = copied.rp;
     tmin = copied.tmin;
     rphtmin = copied.rphtmin;
@@ -403,10 +418,10 @@ Parameters::Parameters(Parameters &copied)
     Mdotfb_t = copied.Mdotfb_t;
     TL = copied.TL;
     Ldisk_bolometric_at_t = copied.Ldisk_bolometric_at_t;
-    // t = copied.t;
+    // t = copied.t;*/
 
     /*Switch for bolometric lightcurve and extra informations*/
-    bolometric = copied.bolometric;
+    /*bolometric = copied.bolometric;
     extras = copied.extras;
     spectra = copied.spectra;
     lcurve = copied.lcurve;
@@ -428,7 +443,7 @@ Parameters::Parameters(Parameters &copied)
     calcTL.reset(copied.calcTL->clone(*this));
 
     wind_radius = copied.wind_radius;
-}
+}*/
 
 void Parameters::change_foutcalculation(Fout_calculation *new_fout)
 {
@@ -762,6 +777,7 @@ void Parameters::init(/*double dtime*/)
 
     // disk_bol_calc = calc_Disk_at_r_for_bolometric(*this);
     Ldiskbol_init();
+    
     // disk_bol_calc(*this);
     calculate_timedependent_parameters(tmin);
     calculate_rL();
@@ -798,19 +814,26 @@ void Parameters::refresh(double dtime)
     calculate_rt();
     calctmin->calc_tmin();
     calculate_mdot_edd();
+    
     // calcMdotfb->init();
     calcMdotfb->refresh();
+    
     calcmdotpeak->calc_mdotpeak();
+    //std::cout << "Ok" << std::endl;
     calculate_timedependent_parameters(tmin);
+   
     calculate_rL();
     fv_check();
     calculate_rphtmin();
     calculate_tphtmin();
+    
 
     calculate_timedependent_parameters(dtime);
     calculate_rin();
     //calculate_rout();
     calculate_rhalf();
+
+    Ldiskbol_init();
 
     calculate_time_wind_limit();
     calculate_time_rph_limit();
@@ -841,7 +864,16 @@ void Parameters::calculate_timedependent_parameters(double t)
 
     calcMdotfb->calc_Mdotfb_at_t(t);
     calcfout->calculate_fout();
-    calc_Ldisk(); // Ldisk_bolometric_at_t kiszámolása
+    //std::cout << "Rin = " << rin << "Rout = " << rout << std::endl; 
+    //calc_Ldisk(); // Ldisk_bolometric_at_t kiszámolása
+    if(/*eta_reprocessing != 0*/ rout > rin)
+    {
+        calc_Ldisk(); // Ldisk_bolometric_at_t kiszámolása
+    }
+    else
+    {
+        Ldisk_bolometric_at_t = 0;
+    }
     TL = calcTL->calc_TL(Ldisk_bolometric_at_t);
     calculate_n();
     calculate_N_col();
@@ -1010,6 +1042,7 @@ void Mdotpeak_L09_all::calc_mdotpeak()
         tpeak = tpeak_relative_to_tmin_n3 * param_obj.tmin;
     }
     param_obj.calcMdotfb->calc_Mdotfb_at_t(tpeak);
+    //std::cout << "Ok1" << std::endl;
     param_obj.Mdot_peak = param_obj.Mdotfb_t;
 }
 
@@ -1255,6 +1288,7 @@ void Mdotfb_L09_all::init()
 void Mdotfb_L09_all::refresh()
 {
     calc_constpart();
+    //std::cout << "I live" << std::endl;
     // std::string needed_file;
     /*if(const char* path = std::getenv("TIDE_PATH"))
     {
@@ -1384,7 +1418,7 @@ Fx_for_sigma::Fx_for_sigma() : p(*new Parameters) {}
 double Fx_for_sigma::G(double z)
 {
     double res;
-    res = 1.0 / (2.0 * z) * std::exp((-w * w + w_Rc * w_Rc) / (4.0 * z)) * std::cyl_bessel_i(p.time_dep_rout.l, w * w_Rc / (2.0 * z));
+    res = 1.0 / (2.0 * z) * std::exp((-w * w + w_Rc * w_Rc) / (4.0 * z)) * used_cyl_bessel_i(p.time_dep_rout.l, w * w_Rc / (2.0 * z));
     return res;
 }
 

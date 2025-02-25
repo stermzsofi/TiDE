@@ -8,6 +8,40 @@
 #include <string>
 #include <regex>
 #include <cmath>
+#include <sstream>
+#include "../config.h"
+
+#ifndef STDCXX_SPEC_MATH
+    #ifdef STDCXX_TR1_HEADERS
+        #include <tr1/cmath>
+    #else
+        #include <boost/math/special_functions/bessel.hpp>
+    #endif
+#endif
+
+double used_cyl_bessel_i(double nu, double x);
+
+
+/*#ifdef STDCXX_SPEC_MATH
+    double used_cyl_bessel_i(double nu, double x)
+    {
+        return std::cyl_bessel_i(nu, x);
+    }
+#else
+    #ifdef STDCXX_TR1_HEADERS
+        #include <tr1/cmath>
+        double used_cyl_bessel_i(double nu, double x)
+        {
+            return std::tr1::cyl_bessel_i(nu, x); 
+        }
+    #else
+        #include <boost/math/special_functions/bessel.hpp>
+        double used_cyl_bessel_i(double nu, double x)
+        {
+            return boost::math::cyl_bessel_i(nu, x);
+        }
+    #endif
+#endif*/
 
 //Declaration of Parameters struct and definition of Parameters_run: itt will contain the parameter settings of the ligt-curve
 struct Parameters;

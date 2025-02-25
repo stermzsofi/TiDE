@@ -57,6 +57,8 @@
         return res;
     }
 
+    
+
     Quad_Trapezoidal::Quad_Trapezoidal(Fx& _fv, double _x_start, double _x_end, double _eps) : fv(&_fv), x_start(_x_start), x_end(_x_end), eps(_eps)
     {
         n = 0;
@@ -70,6 +72,7 @@
         n++;
         if ( 1 == n )
         {
+            //std::cout << "next x_end" << x_end << "xstart " << x_start << "fv xstart" << fv->calc_Fx(x_start) << "fv_xend " << fv->calc_Fx(x_end) << std::endl;
             s = 0.5 * (x_end - x_start) * (fv->calc_Fx(x_start) + fv->calc_Fx(x_end));
             return s;
         }
@@ -93,15 +96,22 @@
 
     double Quad_Trapezoidal::qtrap()
     {
+        //std::cout << "n " << n << " x_start " << x_start  << std::endl;
+        //std::cout <<  "fv xstart" << fv->calc_Fx(x_start) << std::endl;
         const int JMAX = 20;        //max number of steps: 2^20
         double olds = 0.0;
+        n=0;s=0;
         for (int j = 0; j < JMAX; j++)
         {
             next();
-            if (!std::isfinite(s)) throw("WARNING: S is nan!"); 
+            if (!std::isfinite(s))
+            {
+                n = 0;
+                throw("WARNING: S is nan!"); 
+            } //throw("WARNING: S is nan!"); 
             if(j > 3)
             {
-                if (std::abs(s - olds) < eps * std::abs(olds))
+                if (std::abs(s - olds) < eps * std::abs(olds) || (s == 0 && olds == 0))
                 {
                     n = 0;
                     //std::cout << "The needed number of j is: " << j << " corresponds to " << std::pow(2,j) << " step. The error is: " << std::abs(s)/std::abs(olds) << std::endl;
@@ -247,7 +257,7 @@
         double fh = fx->calc_Fx(x2);
         if((fl > 0 && fh > 0) || (fl < 0 && fh < 0))    //if in this boundary fx couldn't reach 0
         {
-            std::cout << "xl = " << x1  << "\tfl = " << fl << "\txh = " << x2 << "\tfh = " << fh << std::endl;
+            //std::cout << "xl = " << x1  << "\tfl = " << fl << "\txh = " << x2 << "\tfh = " << fh << std::endl;
             throw std::runtime_error("ERROR! Safe rutine boundary not appropriate!");
         }
         if(fl == 0) return x1; 

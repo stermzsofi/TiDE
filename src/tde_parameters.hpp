@@ -252,7 +252,7 @@ struct Parameters
         Parameters(int N_o, double e, double b, double fo, double fv_, double dist, double ink, double nu_, Star star, Blackhole blackhole);
         Parameters();
         ~Parameters();
-        Parameters(Parameters& copied);
+        //Parameters(Parameters& copied);
         
         //Functions used in constructor and init
         void fv_check();  //check using fv, v_wind may is higher, than light velocity and also calculate the vwind velocity

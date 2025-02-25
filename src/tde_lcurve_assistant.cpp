@@ -1,5 +1,20 @@
 #include "tde_lcurve_assistant.hpp"
 
+double used_cyl_bessel_i(double nu, double x)
+{
+    #ifdef STDCXX_SPEC_MATH
+        return std::cyl_bessel_i(nu,x);
+    #else
+        #ifdef STDCXX_TR1_HEADERS
+            
+            return std::tr1::cyl_bessel_i(nu, x);
+        #else
+            //#include <boost/math/special_functions/bessel.hpp>
+            return boost::math::cyl_bessel_i(nu, x);
+        #endif
+    #endif
+}
+
 Parameters Parameters_run;
 
 void chech_option(std::string name, std::string value, bool argument)

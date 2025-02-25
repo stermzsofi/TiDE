@@ -1,13 +1,13 @@
 M6	1.
 mstar	1.
 rstar	ms
-eta	0.1
+eta	0.2
 beta	1.
-fout	0.1
-fv	1.
+fout	0.2
+fv	1.5
 d	0.
 i	0.
 nu	6.3e+14
 N	1000
 dt	0.5
-tend_rt_tmin	1000
+tend_rt_tmin	300

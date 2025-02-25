@@ -1,7 +1,13 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Defined if the requested minimum BOOST version is satisfied */
+#undef HAVE_BOOST
+
 /* define if the compiler supports basic C++17 syntax */
 #undef HAVE_CXX17
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -33,6 +39,9 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#undef LT_OBJDIR
+
 /* Name of package */
 #undef PACKAGE
 
@@ -53,6 +62,15 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Special math functions are present in boost. */
+#undef STDCXX_BOOST_SPEC_MATH
+
+/* Special math functions are present in cmath. */
+#undef STDCXX_SPEC_MATH
+
+/* Define if ISO C++ TR1 header files are present. */
+#undef STDCXX_TR1_HEADERS
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS

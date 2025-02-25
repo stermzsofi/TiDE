@@ -65,7 +65,7 @@ class Quadrature
 class Quad_Trapezoidal : public Quadrature
 {
 	public:
-		Quad_Trapezoidal(){};
+		Quad_Trapezoidal(){n=0;s=0;};
 		Quad_Trapezoidal(Fx& _fv, double _x_start, double _x_end, double _eps);
 		void set_eps(double _eps) {eps = _eps;}
 		void set_xstart(double _x_start){x_start = _x_start;}
