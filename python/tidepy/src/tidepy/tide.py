@@ -24,6 +24,42 @@ lib.CLdisk_at_time.restype=ctypes.c_double
 lib.Cparameters.restype=ctypes.c_void_p
 lib.Ldiffused_at_time.restype=ctypes.c_double
 
+
+lib.param_init.argtypes=[ctypes.c_void_p]
+lib.param_refreshtime.argtypes=list(ctypes.c_void_p, ctypes.c_double)
+lib.param_refresh.argtypes=list(ctypes.c_void_p)
+lib.param_set_allparams.argtypes=list(ctypes.c_void_p, ctypes.c_double, ctypes.c_double, 
+        ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_char_p,
+        ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_char_p, 
+        ctypes.c_double, ctypes.c_int, 
+        ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p,
+        ctypes.c_double)
+lib.param_set_params.argtypes=list(ctypes.c_void_p, ctypes.c_double, ctypes.c_double, 
+        ctypes.c_double, ctypes.c_double,
+        ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_char_p, 
+        ctypes.c_double, ctypes.c_int, 
+        ctypes.c_double)
+lib.print_params.argtypes=list(ctypes.c_void_p)
+lib.param_set_timedependent_pars.argtypes=list(ctypes.c_void_p, ctypes.c_double)
+lib.get_parameters_time.restype=ctypes.c_double
+lib.get_parameters_time.argtypes=list(ctypes.c_void_p)
+lib.get_parameters_tmin.argtypes=list(ctypes.c_void_p)
+lib.Cwind.restype=ctypes.c_void_p
+lib.Cwind.argtypes=list(ctypes.c_void_p)
+lib.Lwind_at_nu_time.argtypes=list(ctypes.c_void_p, ctypes.c_double, ctypes.c_double)
+lib.Cdisk.restype=ctypes.c_void_p
+lib.Cdisk.argtypes=list(ctypes.c_void_p)
+lib.Ldisk_at_nu_time.argtypes=list(ctypes.c_void_p, ctypes.c_void_p, ctypes.c_double, ctypes.c_double);
+lib.CLdisk_at_time.argtypes=list(ctypes.c_void_p, ctypes.c_void_p, ctypes.c_double)
+lib.Cdiffused.restype=ctypes.c_void_p
+lib.Cdiffused.argtypes=list(ctypes.c_void_p)
+lib.Ldiffused_reset.argtypes=list(ctypes.c_void_p)
+lib.Ldiffused_at_time.argtypes=list(ctypes.c_void_p, ctypes.c_void_p, ctypes.c_double);
+
+
+
+
+
 class Parameters(object):
     """
         Parameter class of TDE.
